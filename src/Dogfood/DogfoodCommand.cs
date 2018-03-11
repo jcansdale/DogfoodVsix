@@ -1,13 +1,10 @@
-﻿extern alias DS14;
-extern alias DS15;
-using System;
+﻿using System;
 using System.ComponentModel.Design;
 using Dogfood.Exports;
-using EnvDTE;
+using Dogfood.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
-using DogfoodService14 = DS14::Dogfood.Services.DogfoodService;
-using DogfoodService15 = DS15::Dogfood.Services.DogfoodService;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Task = System.Threading.Tasks.Task;
 
 namespace InstallExperiment
@@ -80,7 +77,6 @@ namespace InstallExperiment
         /// <param name="e">Event args.</param>
         async void MenuItemCallback(object sender, EventArgs e)
         {
-            var dte = (DTE)await package.GetServiceAsync(typeof(DTE));
             var pane = package.GetOutputPane(OutputPaneGuid, "Dogfood");
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -91,22 +87,9 @@ namespace InstallExperiment
                 pane.OutputString(line + Environment.NewLine);
             });
 
-            var service = FindDogfoodService(dte);
+            var componentModel = (IComponentModel)await package.GetServiceAsync(typeof(SComponentModel));
+            var service = componentModel.GetService<IDogfoodService>();
             await service.Execute(progress);
-        }
-
-        IDogfoodService FindDogfoodService(DTE dte)
-        {
-            var asp = (IAsyncServiceProvider)package;
-            switch (dte.Version)
-            {
-                case "14.0":
-                    return new Lazy<IDogfoodService>(() => new DogfoodService14(package)).Value;
-                case "15.0":
-                    return new Lazy<IDogfoodService>(() => new DogfoodService15(package)).Value;
-                default:
-                    return null;
-            }
         }
     }
 }
