@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Dogfood.Services;
 
 namespace InstallExperiment
 {
@@ -18,7 +20,11 @@ namespace InstallExperiment
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            await DogfoodCommand.InitializeAsync(this);
+            var componentModel = (IComponentModel)await GetServiceAsync(typeof(SComponentModel));
+            foreach(var initializable in componentModel.GetExtensions<IAsyncInitializable>())
+            {
+                await initializable.InitializeAsync(this);
+            }
         }
     }
 }

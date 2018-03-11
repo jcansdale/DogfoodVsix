@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDogfoodOutputPane.cs" />
     <Compile Include="IDogfoodService.cs" />
     <Compile Include="IProjectUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

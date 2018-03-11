@@ -1,64 +1,27 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Dogfood.Exports;
 using EnvDTE;
-using Microsoft.Win32;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.ExtensionManager;
-using System.Collections.Generic;
-using VSLangProj;
-using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 
 namespace Dogfood.Services
 {
     public class DogfoodService : IDogfoodService
     {
-        IServiceProvider serviceProvider;
+        IAsyncServiceProvider asyncServiceProvider;
         IProjectUtilities projectUtilities;
-
-        public DogfoodService(IServiceProvider serviceProvider, IProjectUtilities projectUtilities)
+        
+        public DogfoodService(IAsyncServiceProvider asyncServiceProvider, IProjectUtilities projectUtilities)
         {
-            this.serviceProvider = serviceProvider;
+            this.asyncServiceProvider = asyncServiceProvider;
             this.projectUtilities = projectUtilities;
-        }
-
-        public async Task Execute(IProgress<string> progress)
-        {
-            var dte = (DTE)serviceProvider.GetService(typeof(DTE));
-
-            progress = progress ?? new Progress<string>(Console.WriteLine);
-
-            try
-            {
-                var openFileDialog = new OpenFileDialog
-                {
-                    Filter = "Visual Studio Extension (*.vsix)|*.vsix"
-                };
-
-                var vsixFile = FindVsixFile(dte.Solution);
-                if (vsixFile != null)
-                {
-                    openFileDialog.InitialDirectory = Path.GetDirectoryName(vsixFile);
-                    openFileDialog.FileName = Path.GetFileName(vsixFile);
-                }
-
-                if (openFileDialog.ShowDialog() == true)
-                {
-                    await Reinstall(openFileDialog.FileName, progress);
-                }
-            }
-            catch (Exception e)
-            {
-                progress.Report(e.ToString());
-            }
         }
 
         public async Task Reinstall(string vsixFile, IProgress<string> progress)
         {
-            var em = (IVsExtensionManager)serviceProvider.GetService(typeof(SVsExtensionManager));
+            var em = (IVsExtensionManager)await asyncServiceProvider.GetServiceAsync(typeof(SVsExtensionManager));
             var ext = em.CreateInstallableExtension(vsixFile);
 
             if (em.TryGetInstalledExtension(ext.Header.Identifier, out IInstalledExtension installedExt))
