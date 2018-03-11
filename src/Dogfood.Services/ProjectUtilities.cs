@@ -14,6 +14,29 @@ namespace Dogfood.Services
     [Export(typeof(IProjectUtilities))]
     public class ProjectUtilities : IProjectUtilities
     {
+        public string FindVsixFile(Solution solution)
+        {
+            var projects = FindProjects(solution);
+            foreach (Project project in projects)
+            {
+                var file = FindBuiltFile(project);
+                if (file == null)
+                {
+                    continue;
+                }
+
+                file = Path.ChangeExtension(file, "vsix");
+                if (!File.Exists(file))
+                {
+                    continue;
+                }
+
+                return file;
+            }
+
+            return null;
+        }
+
         public string FindBuiltFile(Project project)
         {
             try

@@ -17,6 +17,7 @@ namespace Dogfood.Services
         public static readonly Guid CommandSet = new Guid("998fbf43-97c5-4598-b758-29c5db102cda");
 
         readonly IDogfoodService dogfoodService;
+        readonly IProjectUtilities projectUtilities;
         readonly IDogfoodOutputPane dogfoodOutputPane;
 
         DTE dte;
@@ -24,9 +25,11 @@ namespace Dogfood.Services
         [ImportingConstructor]
         public DogfoodCommand(
             IDogfoodService dogfoodService,
+            IProjectUtilities projectUtilities,
             IDogfoodOutputPane dogfoodOutputPane)
         {
             this.dogfoodService = dogfoodService;
+            this.projectUtilities = projectUtilities;
             this.dogfoodOutputPane = dogfoodOutputPane;
         }
 
@@ -62,7 +65,7 @@ namespace Dogfood.Services
                 Filter = "Visual Studio Extension (*.vsix)|*.vsix"
             };
 
-            var vsixFile = dogfoodService.FindVsixFile(dte.Solution);
+            var vsixFile = projectUtilities.FindVsixFile(dte.Solution);
             if (vsixFile != null)
             {
                 openFileDialog.InitialDirectory = Path.GetDirectoryName(vsixFile);

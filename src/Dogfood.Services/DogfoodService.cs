@@ -8,7 +8,6 @@ using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 using DogfoodService14 = DS14::Dogfood.Services.DogfoodService;
 using DogfoodService15 = DS15::Dogfood.Services.DogfoodService;
-using System.Threading.Tasks;
 
 namespace Dogfood.Services
 {
@@ -18,31 +17,26 @@ namespace Dogfood.Services
     public class DogfoodService : IAsyncInitializable, IDogfoodService
     {
         readonly IProjectUtilities projectUtilities;
-        readonly Lazy<IDogfoodService> dogfoodService;
 
-        IAsyncServiceProvider asyncServiceProvider;
-        DTE dte;
+        Lazy<IDogfoodService> dogfoodService;
 
         [ImportingConstructor]
         public DogfoodService(IProjectUtilities projectUtilities)
         {
             this.projectUtilities = projectUtilities;
-            dogfoodService = new Lazy<IDogfoodService>(CreateDogfoodService);
         }
 
         public async Task InitializeAsync(AsyncPackage package)
         {
-            asyncServiceProvider = package;
-            dte = (DTE)await package.GetServiceAsync(typeof(DTE));
+            var dte = (DTE)await package.GetServiceAsync(typeof(DTE));
+            dogfoodService = new Lazy<IDogfoodService>(() => CreateDogfoodService(dte, package, projectUtilities));
         }
-
-        public string FindVsixFile(Solution solution) =>
-            dogfoodService.Value.FindVsixFile(solution);
 
         public Task Reinstall(string vsixFile, IProgress<string> progress) =>
             dogfoodService.Value.Reinstall(vsixFile, progress);
 
-        IDogfoodService CreateDogfoodService()
+        static IDogfoodService CreateDogfoodService(DTE dte, IAsyncServiceProvider asyncServiceProvider,
+            IProjectUtilities projectUtilities)
         {
             switch (dte.Version)
             {

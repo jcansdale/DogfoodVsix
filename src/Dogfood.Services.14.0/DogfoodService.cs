@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using Dogfood.Exports;
-using EnvDTE;
 using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;
 
@@ -51,29 +49,6 @@ namespace Dogfood.Services
             {
                 progress.Report("Please restart Visual Studio");
             }
-        }
-
-        public string FindVsixFile(Solution solution)
-        {
-            var projects = projectUtilities.FindProjects(solution);
-            foreach (Project project in projects)
-            {
-                var file = projectUtilities.FindBuiltFile(project);
-                if (file == null)
-                {
-                    continue;
-                }
-
-                file = Path.ChangeExtension(file, "vsix");
-                if (!File.Exists(file))
-                {
-                    continue;
-                }
-
-                return file;
-            }
-
-            return null;
         }
 
         static void SetValue(object target, string name, object value)
