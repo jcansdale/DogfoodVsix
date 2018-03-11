@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Dogfood.Exports;
@@ -7,27 +8,27 @@ using EnvDTE;
 using Microsoft.Win32;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.ExtensionManager;
+using System.Collections.Generic;
+using VSLangProj;
+using EnvDTE80;
 
 namespace Dogfood.Services
 {
     public class DogfoodService : IDogfoodService
     {
-        IAsyncServiceProvider asyncServiceProvider;
+        IServiceProvider serviceProvider;
+        IProjectUtilities projectUtilities;
 
-        public DogfoodService(IAsyncServiceProvider asyncServiceProvider)
+        public DogfoodService(IServiceProvider serviceProvider, IProjectUtilities projectUtilities)
         {
-            this.asyncServiceProvider = asyncServiceProvider;
+            this.serviceProvider = serviceProvider;
+            this.projectUtilities = projectUtilities;
         }
 
         public async Task Execute(IProgress<string> progress)
         {
-            var em = (IVsExtensionManager)await asyncServiceProvider.GetServiceAsync(typeof(SVsExtensionManager));
-            var dte = (DTE)await asyncServiceProvider.GetServiceAsync(typeof(DTE));
-            await Execute(em, dte, progress);
-        }
+            var dte = (DTE)serviceProvider.GetService(typeof(DTE));
 
-        public async Task Execute(IVsExtensionManager em, DTE dte, IProgress<string> progress)
-        {
             progress = progress ?? new Progress<string>(Console.WriteLine);
 
             try
@@ -46,7 +47,7 @@ namespace Dogfood.Services
 
                 if (openFileDialog.ShowDialog() == true)
                 {
-                    await Reinstall(em, openFileDialog.FileName, progress);
+                    await Reinstall(openFileDialog.FileName, progress);
                 }
             }
             catch (Exception e)
@@ -55,8 +56,9 @@ namespace Dogfood.Services
             }
         }
 
-        public async Task Reinstall(IVsExtensionManager em, string vsixFile, IProgress<string> progress)
+        public async Task Reinstall(string vsixFile, IProgress<string> progress)
         {
+            var em = (IVsExtensionManager)serviceProvider.GetService(typeof(SVsExtensionManager));
             var ext = em.CreateInstallableExtension(vsixFile);
 
             if (em.TryGetInstalledExtension(ext.Header.Identifier, out IInstalledExtension installedExt))
@@ -67,7 +69,7 @@ namespace Dogfood.Services
                 {
                     await Task.Run(() => em.Uninstall(installedExt));
                 }
-                catch(RequiresAdminRightsException e)
+                catch (RequiresAdminRightsException e)
                 {
                     progress.Report(e.Message);
                 }
@@ -82,7 +84,7 @@ namespace Dogfood.Services
 
             installedExt = em.GetInstalledExtension(ext.Header.Identifier);
             var reason = em.Enable(installedExt);
-            if(reason != RestartReason.None)
+            if (reason != RestartReason.None)
             {
                 progress.Report("Please restart Visual Studio");
             }
@@ -90,37 +92,25 @@ namespace Dogfood.Services
 
         public string FindVsixFile(Solution solution)
         {
-            foreach (Project project in solution)
+            var projects = projectUtilities.FindProjects(solution);
+            foreach (Project project in projects)
             {
-                var file = FindBuiltFile(project);
-                if (file != null)
+                var file = projectUtilities.FindBuiltFile(project);
+                if (file == null)
                 {
-                    file = Path.ChangeExtension(file, "vsix");
-                    if (File.Exists(file))
-                    {
-                        return file;
-                    }
+                    continue;
                 }
+
+                file = Path.ChangeExtension(file, "vsix");
+                if (!File.Exists(file))
+                {
+                    continue;
+                }
+
+                return file;
             }
 
             return null;
-        }
-
-        public string FindBuiltFile(Project project)
-        {
-            try
-            {
-                var dir = Path.GetDirectoryName(project.FileName);
-                var outputPath = (string)project.ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value;
-                var fileName = (project.ConfigurationManager.ActiveConfiguration.OutputGroups.Item("Built").FileNames as object[])[0] as string;
-                var file = Path.Combine(dir, outputPath, fileName);
-                return Path.GetFullPath(file);
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine(e);
-                return null;
-            }
         }
 
         static void SetValue(object target, string name, object value)
