@@ -2,7 +2,9 @@
 using System.ComponentModel.Composition;
 using Dogfood.Exports;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
+using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.IAsyncServiceProvider;
 
 namespace Dogfood.Services
 {
@@ -14,9 +16,10 @@ namespace Dogfood.Services
 
         IProgress<string> progress;
 
-        public async Task InitializeAsync(AsyncPackage package)
+        public async Task InitializeAsync(IAsyncServiceProvider asyncServiceProvider)
         {
-            var pane = package.GetOutputPane(OutputPaneGuid, "Dogfood");
+            var outputWindow = (IVsOutputWindow)await asyncServiceProvider.GetServiceAsync(typeof(SVsOutputWindow));
+            var pane = CreatePane(outputWindow, OutputPaneGuid, "Dogfood", true, false);
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             pane.Activate();
@@ -26,6 +29,19 @@ namespace Dogfood.Services
                 ThreadHelper.ThrowIfNotOnUIThread();
                 pane.OutputString(line + Environment.NewLine);
             });
+        }
+
+        static IVsOutputWindowPane CreatePane(IVsOutputWindow outputWindow, Guid paneGuid, string title,
+            bool visible, bool clearWithSolution)
+        {
+            outputWindow.CreatePane(
+                ref paneGuid,
+                title,
+                Convert.ToInt32(visible),
+                Convert.ToInt32(clearWithSolution));
+
+            outputWindow.GetPane(ref paneGuid, out IVsOutputWindowPane pane);
+            return pane;
         }
 
         public void Report(string line)

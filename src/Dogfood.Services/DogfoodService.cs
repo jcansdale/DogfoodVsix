@@ -26,10 +26,10 @@ namespace Dogfood.Services
             this.projectUtilities = projectUtilities;
         }
 
-        public async Task InitializeAsync(AsyncPackage package)
+        public async Task InitializeAsync(IAsyncServiceProvider asyncServiceProvider)
         {
-            var dte = (DTE)await package.GetServiceAsync(typeof(DTE));
-            dogfoodService = new Lazy<IDogfoodService>(() => CreateDogfoodService(dte, package, projectUtilities));
+            var dte = (DTE)await asyncServiceProvider.GetServiceAsync(typeof(DTE));
+            dogfoodService = new Lazy<IDogfoodService>(() => CreateDogfoodService(dte, asyncServiceProvider, projectUtilities));
         }
 
         public Task Reinstall(string vsixFile, IProgress<string> progress) =>

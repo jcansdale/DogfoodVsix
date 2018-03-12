@@ -1,10 +1,10 @@
 ﻿using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 
-namespace Dogfood.Services
+namespace Dogfood.Exports
 {
     public interface IAsyncInitializable
     {
-        Task InitializeAsync(AsyncPackage package);
+        Task InitializeAsync(IAsyncServiceProvider asyncServiceProvider);
     }
 }

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 using Microsoft.VisualStudio.ComponentModelHost;
-using Dogfood.Services;
+using Dogfood.Exports;
 
 namespace InstallExperiment
 {

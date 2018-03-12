@@ -33,11 +33,11 @@ namespace Dogfood.Services
             this.dogfoodOutputPane = dogfoodOutputPane;
         }
 
-        public async Task InitializeAsync(AsyncPackage package)
+        public async Task InitializeAsync(IAsyncServiceProvider asyncServiceProvider)
         {
-            dte = (DTE)await package.GetServiceAsync(typeof(DTE));
+            dte = (DTE)await asyncServiceProvider.GetServiceAsync(typeof(DTE));
 
-            var commandService = (OleMenuCommandService)await package.GetServiceAsync(typeof(IMenuCommandService));
+            var commandService = (OleMenuCommandService)await asyncServiceProvider.GetServiceAsync(typeof(IMenuCommandService));
             if (commandService != null)
             {
                 var menuCommandID = new CommandID(CommandSet, CommandId);
