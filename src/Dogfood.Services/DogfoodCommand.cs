@@ -74,6 +74,7 @@ namespace Dogfood.Services
 
             if (openFileDialog.ShowDialog() == true)
             {
+                dogfoodOutputPane.Activate();
                 await dogfoodService.Reinstall(openFileDialog.FileName, dogfoodOutputPane);
             }
         }

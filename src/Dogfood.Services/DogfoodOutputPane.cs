@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using Dogfood.Exports;
+using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
@@ -15,20 +16,29 @@ namespace Dogfood.Services
         public static readonly Guid OutputPaneGuid = new Guid("ba0a91d0-ff3c-41a7-84a9-fd675ceb2e70");
 
         IProgress<string> progress;
+        Window window;
+        IVsOutputWindowPane pane;
 
         public async Task InitializeAsync(IAsyncServiceProvider asyncServiceProvider)
         {
-            var outputWindow = (IVsOutputWindow)await asyncServiceProvider.GetServiceAsync(typeof(SVsOutputWindow));
-            var pane = CreatePane(outputWindow, OutputPaneGuid, "Dogfood", true, false);
+            var dte = (DTE)await asyncServiceProvider.GetServiceAsync(typeof(DTE));
+            window = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
 
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            pane.Activate();
+            var outputWindow = (IVsOutputWindow)await asyncServiceProvider.GetServiceAsync(typeof(SVsOutputWindow));
+            pane = CreatePane(outputWindow, OutputPaneGuid, "Dogfood", true, false);
 
             progress = new Progress<string>(line =>
             {
                 ThreadHelper.ThrowIfNotOnUIThread();
                 pane.OutputString(line + Environment.NewLine);
             });
+        }
+
+        public void Activate()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            pane.Activate();
+            window.Activate();
         }
 
         static IVsOutputWindowPane CreatePane(IVsOutputWindow outputWindow, Guid paneGuid, string title,
