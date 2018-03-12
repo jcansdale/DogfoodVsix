@@ -40,9 +40,10 @@ namespace Dogfood.Services
             if(header.AllUsers)
             {
                 SetValue(header, nameof(header.AllUsers), false);
-                SetValue(header, nameof(header.IsExperimental), true);
-                progress.Report($"Changed extension to AllUsers={header.AllUsers}, IsExperimental={header.IsExperimental}");
+                progress.Report($"Changed extension to AllUsers={header.AllUsers}");
             }
+
+            SetValue(header, nameof(header.IsExperimental), true);
 
             progress.Report("Installing " + ext.Header.Name + " from " + vsixFile);
             await Task.Run(() => em.Install(ext, false));
