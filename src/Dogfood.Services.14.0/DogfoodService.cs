@@ -20,15 +20,15 @@ namespace Dogfood.Services
         public async Task Reinstall(string vsixFile, IProgress<string> progress)
         {
             var em = (IVsExtensionManager)await asyncServiceProvider.GetServiceAsync(typeof(SVsExtensionManager));
-            var ext = em.CreateInstallableExtension(vsixFile);
+            var installableExtension = em.CreateInstallableExtension(vsixFile);
 
-            if (em.TryGetInstalledExtension(ext.Header.Identifier, out IInstalledExtension installedExt))
+            if (em.TryGetInstalledExtension(installableExtension.Header.Identifier, out IInstalledExtension previousExt))
             {
-                progress.Report("Uninstalling " + installedExt.Header.Name);
+                progress.Report("Uninstalling " + previousExt.Header.Name);
 
                 try
                 {
-                    await Task.Run(() => em.Uninstall(installedExt));
+                    await Task.Run(() => em.Uninstall(previousExt));
                 }
                 catch (RequiresAdminRightsException e)
                 {
@@ -36,8 +36,8 @@ namespace Dogfood.Services
                 }
             }
 
-            var header = ext.Header;
-            if(header.AllUsers)
+            var header = installableExtension.Header;
+            if (header.AllUsers)
             {
                 SetValue(header, nameof(header.AllUsers), false);
                 progress.Report($"Changed extension to AllUsers={header.AllUsers}");
@@ -45,15 +45,25 @@ namespace Dogfood.Services
 
             SetValue(header, nameof(header.IsExperimental), true);
 
-            progress.Report("Installing " + ext.Header.Name + " from " + vsixFile);
-            await Task.Run(() => em.Install(ext, false));
-            progress.Report("Installed " + ext.Header.Name + " from " + vsixFile);
+            progress.Report("Installing " + installableExtension.Header.Name + " from " + vsixFile);
+            await Task.Run(() => em.Install(installableExtension, false));
 
-            installedExt = em.GetInstalledExtension(ext.Header.Identifier);
+            var installedExt = em.GetInstalledExtension(installableExtension.Header.Identifier);
+            ReportContents(progress, installedExt);
+
             var reason = em.Enable(installedExt);
             if (reason != RestartReason.None)
             {
                 progress.Report("Please restart Visual Studio");
+            }
+        }
+
+        static void ReportContents(IProgress<string> progress, IInstalledExtension installedExt)
+        {
+            progress.Report(installedExt.InstallPath);
+            foreach (var content in installedExt.Content)
+            {
+                progress.Report($"  {content.RelativePath} ({content.ContentTypeName})");
             }
         }
 
