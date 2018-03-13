@@ -43,11 +43,15 @@ namespace Dogfood.Services
                 SetValue(header, nameof(header.IsExperimental), true);
                 progress.Report($"Changed extension to AllUsers={header.AllUsers},  IsExperimental={header.IsExperimental}");
             }
+            else
+            {
+                SetValue(header, nameof(header.LocalizedName), header.LocalizedName + " [Dogfood]");
+            }
 
-            progress.Report("Installing " + installableExtension.Header.Name + " from " + vsixFile);
+            progress.Report("Installing " + header.Name + " from " + vsixFile);
             await Task.Run(() => em.Install(installableExtension, false));
 
-            var installedExt = em.GetInstalledExtension(installableExtension.Header.Identifier);
+            var installedExt = em.GetInstalledExtension(header.Identifier);
             ReportContents(progress, installedExt);
 
             var reason = em.Enable(installedExt);
