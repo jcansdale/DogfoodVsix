@@ -13,7 +13,7 @@ namespace Dogfood.Services
     {
         IAsyncServiceProvider asyncServiceProvider;
         IProjectUtilities projectUtilities;
-        
+
         public DogfoodService(IAsyncServiceProvider asyncServiceProvider, IProjectUtilities projectUtilities)
         {
             this.asyncServiceProvider = asyncServiceProvider;
@@ -27,7 +27,7 @@ namespace Dogfood.Services
             var identifier = installableExtension.Header.Identifier;
 
             var uninstalled = await Uninstall(identifier, progress);
-            if(!uninstalled)
+            if (!uninstalled)
             {
                 return;
             }
@@ -47,11 +47,8 @@ namespace Dogfood.Services
             var installedExt = em.GetInstalledExtension(identifier);
             ReportContents(progress, installedExt);
 
-            var reason = em.Enable(installedExt);
-            if (reason != RestartReason.None)
-            {
-                progress.Report("Please restart Visual Studio");
-            }
+            em.Enable(installedExt);
+            progress.Report("Please restart Visual Studio");
         }
 
         async Task<bool> Uninstall(string identifier, IProgress<string> progress)
@@ -69,7 +66,7 @@ namespace Dogfood.Services
                 progress.Report("Admin rights are requred to uninstall AllUsers=true extension.");
 
                 var dte = await Dte();
-                if(StartUninstall(dte, identifier, progress))
+                if (StartUninstall(dte, identifier, progress))
                 {
                     progress.Report("Please close Visual Studio, uninstall using VSIXInstaller and try again.");
                 }
