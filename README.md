@@ -18,4 +18,4 @@ It does a few things to make this process as painless as possible.
 Restart Visual Studio and start dogfooding! 🍽 
 
 You can find the latest `Dogfood.vsix` here:
-http://vsixgallery.com/extension/Dogfood.2f4d62f7-a328-4604-840d-0472b058edcd/
+http://vsixgallery.com/author/jamie%20cansdale
