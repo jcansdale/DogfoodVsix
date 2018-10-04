@@ -17,7 +17,7 @@ param (
 	[string] $publishManifest = "$PSScriptRoot\publishManifest.json"
 )
 
-Install-Module -Name VSSetup -RequiredVersion 2.2.5 -Scope CurrentUser
+Install-Module -Name VSSetup -RequiredVersion 2.2.5 -Scope CurrentUser -Force
 Import-Module -Name VSSetup -Version 2.2.5
 
 $VSSetupInstance = Get-VSSetupInstance | Select-VSSetupInstance -Product * -Require 'Microsoft.VisualStudio.Component.VSSDK'
