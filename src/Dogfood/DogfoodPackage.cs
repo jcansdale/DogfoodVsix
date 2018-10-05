@@ -9,7 +9,7 @@ using Dogfood.Exports;
 
 namespace InstallExperiment
 {
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
@@ -20,10 +20,12 @@ namespace InstallExperiment
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            var componentModel = (IComponentModel)await GetServiceAsync(typeof(SComponentModel));
-            foreach(var initializable in componentModel.GetExtensions<IAsyncInitializable>())
+            if (await GetServiceAsync(typeof(SComponentModel)) is IComponentModel componentModel)
             {
-                await initializable.InitializeAsync(this);
+                foreach (var initializable in componentModel.GetExtensions<IAsyncInitializable>())
+                {
+                    await initializable.InitializeAsync(this);
+                }
             }
         }
     }
