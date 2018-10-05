@@ -20,10 +20,12 @@ namespace InstallExperiment
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            var componentModel = (IComponentModel)await GetServiceAsync(typeof(SComponentModel));
-            foreach (var initializable in componentModel.GetExtensions<IAsyncInitializable>())
+            if (await GetServiceAsync(typeof(SComponentModel)) is IComponentModel componentModel)
             {
-                await initializable.InitializeAsync(this);
+                foreach (var initializable in componentModel.GetExtensions<IAsyncInitializable>())
+                {
+                    await initializable.InitializeAsync(this);
+                }
             }
         }
     }
