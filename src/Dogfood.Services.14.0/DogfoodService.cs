@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Dogfood.Exports;
 using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;
+using DTE = EnvDTE.DTE;
 
 namespace Dogfood.Services
 {
@@ -10,7 +13,7 @@ namespace Dogfood.Services
     {
         IAsyncServiceProvider asyncServiceProvider;
         IProjectUtilities projectUtilities;
-        
+
         public DogfoodService(IAsyncServiceProvider asyncServiceProvider, IProjectUtilities projectUtilities)
         {
             this.asyncServiceProvider = asyncServiceProvider;
@@ -19,40 +22,84 @@ namespace Dogfood.Services
 
         public async Task Reinstall(string vsixFile, IProgress<string> progress)
         {
-            var em = (IVsExtensionManager)await asyncServiceProvider.GetServiceAsync(typeof(SVsExtensionManager));
-            var ext = em.CreateInstallableExtension(vsixFile);
+            var em = await ExtensionManager();
+            var installableExtension = em.CreateInstallableExtension(vsixFile);
+            var identifier = installableExtension.Header.Identifier;
 
-            if (em.TryGetInstalledExtension(ext.Header.Identifier, out IInstalledExtension installedExt))
+            var uninstalled = await Uninstall(identifier, progress);
+            if (!uninstalled)
             {
-                progress.Report("Uninstalling " + installedExt.Header.Name);
-
-                try
-                {
-                    await Task.Run(() => em.Uninstall(installedExt));
-                }
-                catch (RequiresAdminRightsException e)
-                {
-                    progress.Report(e.Message);
-                }
+                return;
             }
 
-            var header = ext.Header;
-            if(header.AllUsers)
+            var header = installableExtension.Header;
+            if (header.AllUsers)
             {
                 SetValue(header, nameof(header.AllUsers), false);
-                SetValue(header, nameof(header.IsExperimental), true);
-                progress.Report($"Changed extension to AllUsers={header.AllUsers}, IsExperimental={header.IsExperimental}");
+                progress.Report($"Changed extension to AllUsers={header.AllUsers}");
             }
 
-            progress.Report("Installing " + ext.Header.Name + " from " + vsixFile);
-            await Task.Run(() => em.Install(ext, false));
-            progress.Report("Installed " + ext.Header.Name + " from " + vsixFile);
+            SetValue(header, nameof(header.LocalizedName), header.LocalizedName + " [Dogfood]");
 
-            installedExt = em.GetInstalledExtension(ext.Header.Identifier);
-            var reason = em.Enable(installedExt);
-            if (reason != RestartReason.None)
+            progress.Report("Installing " + header.Name + " from " + vsixFile);
+            await Task.Run(() => em.Install(installableExtension, false));
+
+            var installedExt = em.GetInstalledExtension(identifier);
+            ReportContents(progress, installedExt);
+
+            em.Enable(installedExt);
+            progress.Report("Please restart Visual Studio");
+        }
+
+        async Task<bool> Uninstall(string identifier, IProgress<string> progress)
+        {
+            var em = await ExtensionManager();
+
+            if (!em.TryGetInstalledExtension(identifier, out IInstalledExtension previousExt))
             {
-                progress.Report("Please restart Visual Studio");
+                // nothing to uninstall
+                return true;
+            }
+
+            if (previousExt.Header.AllUsers)
+            {
+                progress.Report("Admin rights are requred to uninstall AllUsers=true extension.");
+
+                var dte = await Dte();
+                if (StartUninstall(dte, identifier, progress))
+                {
+                    progress.Report("Please close Visual Studio, uninstall using VSIXInstaller and try again.");
+                }
+
+                return false;
+            }
+
+            progress.Report("Uninstalling " + previousExt.Header.Name);
+            await Task.Run(() => em.Uninstall(previousExt));
+            return true;
+        }
+
+        static bool StartUninstall(DTE dte, string identifier, IProgress<string> progress)
+        {
+            var dir = Path.GetDirectoryName(dte.FileName);
+            var application = Path.Combine(dir, "VSIXInstaller.exe");
+            if (!File.Exists(application))
+            {
+                progress.Report($"Couldn't find application at: {application}");
+                return false;
+            }
+
+            var startInfo = new ProcessStartInfo(application, $"/uninstall:{identifier}");
+            Process.Start(startInfo);
+            return true;
+        }
+
+        static void ReportContents(IProgress<string> progress, IInstalledExtension installedExt)
+        {
+            progress.Report(installedExt.InstallPath);
+            foreach (var content in installedExt.Content)
+            {
+                progress.Report($"  {content.RelativePath} ({content.ContentTypeName})");
             }
         }
 
@@ -60,5 +107,10 @@ namespace Dogfood.Services
         {
             target.GetType().GetProperty(name).SetValue(target, value);
         }
+
+        async Task<IVsExtensionManager> ExtensionManager() => (IVsExtensionManager)await asyncServiceProvider.GetServiceAsync(typeof(SVsExtensionManager));
+
+        async Task<DTE> Dte() => (DTE)await asyncServiceProvider.GetServiceAsync(typeof(DTE));
+
     }
 }
