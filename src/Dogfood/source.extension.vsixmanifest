@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Dogfood.2f4d62f7-a328-4604-840d-0472b058edcd" Version="0.2" Language="en-US" Publisher="JamieCansdale" />
+    <Identity Id="Dogfood.2f4d62f7-a328-4604-840d-0472b058edcd" Version="0.2" Language="en-US" Publisher="Jamie Cansdale" />
     <DisplayName>Dogfood VSIX</DisplayName>
     <Description xml:space="preserve">Install local VSIX into current instance of Visual Studio</Description>
   </Metadata>
