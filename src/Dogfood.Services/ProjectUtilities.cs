@@ -74,7 +74,10 @@ namespace Dogfood.Services
 
         IEnumerable<Project> FindProjects(Project project)
         {
-            if (project.Kind == ProjectKinds.vsProjectKindSolutionFolder)
+            // HACK: Avoid - Severity Code Description Project File Line Suppression
+            // State Error CS1752 Interop type 'ProjectKinds' cannot be embedded
+            var vsProjectKindSolutionFolder = "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}";
+            if (project.Kind == /*ProjectKinds.*/ vsProjectKindSolutionFolder)
             {
                 var projects = Enumerable.Empty<Project>();
                 foreach (ProjectItem item in project.ProjectItems)

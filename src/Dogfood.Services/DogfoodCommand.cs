@@ -33,8 +33,9 @@ namespace Dogfood.Services
             this.dogfoodOutputPane = dogfoodOutputPane;
         }
 
-        public async Task InitializeAsync(IAsyncServiceProvider asyncServiceProvider)
+        public async Task InitializeAsync(IServiceProvider serviceProvider)
         {
+            var asyncServiceProvider = (IAsyncServiceProvider)serviceProvider.GetService(typeof(IAsyncServiceProvider));
             dte = (DTE)await asyncServiceProvider.GetServiceAsync(typeof(DTE));
 
             var commandService = (OleMenuCommandService)await asyncServiceProvider.GetServiceAsync(typeof(IMenuCommandService));

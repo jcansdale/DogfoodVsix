@@ -6,6 +6,7 @@ using Dogfood.Exports;
 using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;
 using DTE = EnvDTE.DTE;
+using Task = System.Threading.Tasks.Task;
 
 namespace Dogfood.Services
 {
@@ -14,8 +15,9 @@ namespace Dogfood.Services
         IAsyncServiceProvider asyncServiceProvider;
         IProjectUtilities projectUtilities;
 
-        public DogfoodService(IAsyncServiceProvider asyncServiceProvider, IProjectUtilities projectUtilities)
+        public DogfoodService(IServiceProvider serviceProvider, IProjectUtilities projectUtilities)
         {
+            var asyncServiceProvider = (IAsyncServiceProvider)serviceProvider.GetService(typeof(IAsyncServiceProvider));
             this.asyncServiceProvider = asyncServiceProvider;
             this.projectUtilities = projectUtilities;
         }

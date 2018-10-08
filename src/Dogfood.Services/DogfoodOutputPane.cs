@@ -19,8 +19,9 @@ namespace Dogfood.Services
         Window window;
         IVsOutputWindowPane pane;
 
-        public async Task InitializeAsync(IAsyncServiceProvider asyncServiceProvider)
+        public async Task InitializeAsync(IServiceProvider serviceProvider)
         {
+            var asyncServiceProvider = (IAsyncServiceProvider)serviceProvider.GetService(typeof(IAsyncServiceProvider));
             var dte = (DTE)await asyncServiceProvider.GetServiceAsync(typeof(DTE));
             window = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
 
