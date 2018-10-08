@@ -26,25 +26,24 @@ namespace Dogfood.Services
             this.projectUtilities = projectUtilities;
         }
 
-        public async Task InitializeAsync(IServiceProvider serviceProvider)
+        public async Task InitializeAsync(IAsyncServiceProvider asyncServiceProvider)
         {
-            var asyncServiceProvider = (IAsyncServiceProvider)serviceProvider.GetService(typeof(IAsyncServiceProvider));
             var dte = (DTE)await asyncServiceProvider.GetServiceAsync(typeof(DTE));
-            dogfoodService = new Lazy<IDogfoodService>(() => CreateDogfoodService(dte, serviceProvider, projectUtilities));
+            dogfoodService = new Lazy<IDogfoodService>(() => CreateDogfoodService(dte, asyncServiceProvider, projectUtilities));
         }
 
         public Task Reinstall(string vsixFile, IProgress<string> progress) =>
             dogfoodService.Value.Reinstall(vsixFile, progress);
 
-        static IDogfoodService CreateDogfoodService(DTE dte, IServiceProvider serviceProvider,
+        static IDogfoodService CreateDogfoodService(DTE dte, IAsyncServiceProvider asyncServiceProvider,
             IProjectUtilities projectUtilities)
         {
             switch (dte.Version)
             {
                 case "14.0":
-                    return CreateDogfoodService(() => new DogfoodService14(serviceProvider, projectUtilities));
+                    return CreateDogfoodService(() => new DogfoodService14(asyncServiceProvider, projectUtilities));
                 case "15.0":
-                    return CreateDogfoodService(() => new DogfoodService15(serviceProvider, projectUtilities));
+                    return CreateDogfoodService(() => new DogfoodService15(asyncServiceProvider, projectUtilities));
                 default:
                     return null;
             }

@@ -67,11 +67,11 @@
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Madskristensen.VisualStudio.SDK">
-      <Version>14.0.68-pre</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes">
       <Version>15.0.21</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Immutable.14.0">
+      <Version>14.0.23205</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
