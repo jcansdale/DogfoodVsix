@@ -82,9 +82,6 @@
     <PackageReference Include="Madskristensen.VisualStudio.SDK">
       <Version>14.0.68-pre</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes">
-      <Version>15.0.21</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
