@@ -6,6 +6,7 @@ using Dogfood.Exports;
 using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;
 using DTE = EnvDTE.DTE;
+using Task = System.Threading.Tasks.Task;
 
 namespace Dogfood.Services
 {
