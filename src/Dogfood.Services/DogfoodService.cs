@@ -1,6 +1,7 @@
 ﻿extern alias DS14;
 extern alias DS15;
 using System;
+using System.Threading.Tasks;
 using System.ComponentModel.Composition;
 using Dogfood.Exports;
 using EnvDTE;
@@ -32,7 +33,7 @@ namespace Dogfood.Services
             dogfoodService = new Lazy<IDogfoodService>(() => CreateDogfoodService(dte, asyncServiceProvider, projectUtilities));
         }
 
-        public Task Reinstall(string vsixFile, IProgress<string> progress) =>
+        public Task<bool> Reinstall(string vsixFile, IProgress<string> progress) =>
             dogfoodService.Value.Reinstall(vsixFile, progress);
 
         static IDogfoodService CreateDogfoodService(DTE dte, IAsyncServiceProvider asyncServiceProvider,

@@ -21,7 +21,7 @@ namespace Dogfood.Services
             this.projectUtilities = projectUtilities;
         }
 
-        public async Task Reinstall(string vsixFile, IProgress<string> progress)
+        public async Task<bool> Reinstall(string vsixFile, IProgress<string> progress)
         {
             var em = await ExtensionManager();
             var installableExtension = em.CreateInstallableExtension(vsixFile);
@@ -30,7 +30,7 @@ namespace Dogfood.Services
             var uninstalled = await Uninstall(identifier, progress);
             if (!uninstalled)
             {
-                return;
+                return false;
             }
 
             var header = installableExtension.Header;
@@ -50,6 +50,8 @@ namespace Dogfood.Services
 
             em.Enable(installedExt);
             progress.Report("Please restart Visual Studio");
+
+            return true;
         }
 
         async Task<bool> Uninstall(string identifier, IProgress<string> progress)
