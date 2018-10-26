@@ -45,6 +45,8 @@ namespace Dogfood.Services
                     return CreateDogfoodService(() => new DogfoodService14(asyncServiceProvider, projectUtilities));
                 case "15.0":
                     return CreateDogfoodService(() => new DogfoodService15(asyncServiceProvider, projectUtilities));
+                case "16.0":
+                    return CreateDogfoodService(() => new DogfoodService15(asyncServiceProvider, projectUtilities));
                 default:
                     return null;
             }
