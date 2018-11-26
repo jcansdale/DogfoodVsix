@@ -12,6 +12,12 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- powershell: |
+    # Set the cloud build number and variables
+    # https://github.com/AArnott/Nerdbank.GitVersioning   
+    dotnet tool install --tool-path . nbgv
+    .\nbgv cloud --all-vars
+  displayName: 'Set the cloud build number and variables'
 - task: NuGetToolInstaller@0
 
 - task: NuGetCommand@2
