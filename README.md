@@ -1,6 +1,6 @@
 # Dogfood.vsix
 
-`Dogfood.vsix` installs Visual Studio extensions without the need to restart all running instances of Visual Studio. **It speeds up dogfooding your own or trying out any Visual Studio extensions.**
+`Dogfood.vsix` installs Visual Studio extensions without the need to restart all running instances of Visual Studio. *It speeds up dogfooding your own or trying out any Visual Studio extensions.*
 
 If you are an extension developer, `Dogfood.vsix` will conveniently locate .vsix in your extension project and open it in your main Visual Studio instance.
 
@@ -17,7 +17,7 @@ Once installed, it adds "Dogfood" menu item to the Visual Studio "Tools" menu.
 ![image](https://user-images.githubusercontent.com/11719160/41686244-441010b6-74db-11e8-809c-a8e4b1c2acdb.png)
 To start dogfooding just run the "Dogfood" command. If your current solution contains an extension project, `Dogfood.vsix` will locate the .vsix and suggest opening it. Alternatively, you can select any local .vsix file or paste in a .vsix URL to open (e.g. from a GitHub Releases pages or Open VSIX Gallery).
 
-`Dogfood.vsix` will install the selected .vsix. To use the newly installed extension **you will only need to restart the Visual Studio instance you are currently in**.
+`Dogfood.vsix` will install the selected .vsix. To use the newly installed extension *you will only need to restart the Visual Studio instance you are currently in*.
 
 # How it Works?
 
