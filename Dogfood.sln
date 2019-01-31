@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		version.json = version.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dogfood.Services.16.0", "src\Dogfood.Services.16.0\Dogfood.Services.16.0.csproj", "{70337588-3B2B-49F6-A0DF-E1C27CD608B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,14 @@ Global
 		{1B2AFDF1-6B01-42EA-A865-FAF508AF2F51}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1B2AFDF1-6B01-42EA-A865-FAF508AF2F51}.Release|x86.ActiveCfg = Release|Any CPU
 		{1B2AFDF1-6B01-42EA-A865-FAF508AF2F51}.Release|x86.Build.0 = Release|Any CPU
+		{70337588-3B2B-49F6-A0DF-E1C27CD608B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70337588-3B2B-49F6-A0DF-E1C27CD608B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70337588-3B2B-49F6-A0DF-E1C27CD608B3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{70337588-3B2B-49F6-A0DF-E1C27CD608B3}.Debug|x86.Build.0 = Debug|Any CPU
+		{70337588-3B2B-49F6-A0DF-E1C27CD608B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70337588-3B2B-49F6-A0DF-E1C27CD608B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70337588-3B2B-49F6-A0DF-E1C27CD608B3}.Release|x86.ActiveCfg = Release|Any CPU
+		{70337588-3B2B-49F6-A0DF-E1C27CD608B3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +94,7 @@ Global
 		{136EB190-87C5-454D-A866-C65FD6C5F8BB} = {DD7DD824-5FD5-4069-A0D5-2C311265192A}
 		{36045D9C-C273-45AB-BDAB-965B91914DCF} = {DD7DD824-5FD5-4069-A0D5-2C311265192A}
 		{1B2AFDF1-6B01-42EA-A865-FAF508AF2F51} = {DD7DD824-5FD5-4069-A0D5-2C311265192A}
+		{70337588-3B2B-49F6-A0DF-E1C27CD608B3} = {DD7DD824-5FD5-4069-A0D5-2C311265192A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F15FD5E0-3282-446A-AEF7-1B346BF3C240}
