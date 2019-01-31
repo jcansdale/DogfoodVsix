@@ -2,6 +2,8 @@
 extern alias DS15;
 extern alias DS16;
 using System;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.ComponentModel.Composition;
 using Dogfood.Exports;
@@ -46,7 +48,17 @@ namespace Dogfood.Services
                 case "15.0":
                     return CreateDogfoodService(() => new DogfoodService15(serviceProvider, projectUtilities));
                 case "16.0":
-                    return CreateDogfoodService(() => new DogfoodService16(serviceProvider, projectUtilities));
+                    try
+                    {
+                        Assembly.Load("Microsoft.VisualStudio.ExtensionManager, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
+                        return CreateDogfoodService(() => new DogfoodService16(serviceProvider, projectUtilities));
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        // If we can't load ExtensionManager 16.0, fall back to using the 15.0 version
+                        return CreateDogfoodService(() => new DogfoodService15(serviceProvider, projectUtilities));
+                    }
+
                 default:
                     return null;
             }
