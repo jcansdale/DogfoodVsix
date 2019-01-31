@@ -12,10 +12,10 @@ using DogfoodService16 = DS16::Dogfood.Services.DogfoodService;
 
 namespace Dogfood.Services
 {
-    [Export(typeof(IInitializable))]
+    [Export(typeof(IMainThreadInitializable))]
     [Export(typeof(IDogfoodService))]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    public class DogfoodService : IInitializable, IDogfoodService
+    public class DogfoodService : IMainThreadInitializable, IDogfoodService
     {
         readonly IProjectUtilities projectUtilities;
 
@@ -27,7 +27,7 @@ namespace Dogfood.Services
             this.projectUtilities = projectUtilities;
         }
 
-        public void Initialize(IServiceProvider serviceProvider)
+        public void InitializeOnMainThread(IServiceProvider serviceProvider)
         {
             var dte = (DTE)serviceProvider.GetService(typeof(DTE));
             dogfoodService = new Lazy<IDogfoodService>(() => CreateDogfoodService(dte, serviceProvider, projectUtilities));

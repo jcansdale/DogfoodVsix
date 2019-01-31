@@ -3,8 +3,8 @@ using System;
 
 namespace Dogfood.Exports
 {
-    public interface IInitializable
+    public interface IMainThreadInitializable
     {
-        void Initialize(IServiceProvider serviceProvider);
+        void InitializeOnMainThread(IServiceProvider serviceProvider);
     }
 }

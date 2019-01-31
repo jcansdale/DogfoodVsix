@@ -11,8 +11,8 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Dogfood.Services
 {
-    [Export(typeof(IInitializable))]
-    public class DogfoodCommand : IInitializable
+    [Export(typeof(IMainThreadInitializable))]
+    public class DogfoodCommand : IMainThreadInitializable
     {
         public const int CommandId = 0x0100;
         public static readonly Guid CommandSet = new Guid("998fbf43-97c5-4598-b758-29c5db102cda");
@@ -35,7 +35,7 @@ namespace Dogfood.Services
             this.serviceProvider = serviceProvider;
         }
 
-        public void Initialize(IServiceProvider serviceProvider)
+        public void InitializeOnMainThread(IServiceProvider serviceProvider)
         {
             var commandService = (OleMenuCommandService)serviceProvider.GetService(typeof(IMenuCommandService));
             if (commandService != null)

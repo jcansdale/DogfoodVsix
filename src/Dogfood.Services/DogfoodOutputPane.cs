@@ -8,8 +8,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Dogfood.Services
 {
     [Export(typeof(IDogfoodOutputPane))]
-    [Export(typeof(IInitializable))]
-    public class DogfoodOutputPane : IInitializable, IDogfoodOutputPane
+    [Export(typeof(IMainThreadInitializable))]
+    public class DogfoodOutputPane : IMainThreadInitializable, IDogfoodOutputPane
     {
         public static readonly Guid OutputPaneGuid = new Guid("ba0a91d0-ff3c-41a7-84a9-fd675ceb2e70");
 
@@ -17,7 +17,7 @@ namespace Dogfood.Services
         Window window;
         IVsOutputWindowPane pane;
 
-        public void Initialize(IServiceProvider serviceProvider)
+        public void InitializeOnMainThread(IServiceProvider serviceProvider)
         {
             var dte = (DTE)serviceProvider.GetService(typeof(DTE));
             window = dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);

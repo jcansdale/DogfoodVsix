@@ -23,9 +23,9 @@ namespace InstallExperiment
             if (await GetServiceAsync(typeof(SComponentModel)) is IComponentModel componentModel)
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
-                foreach (var initializable in componentModel.GetExtensions<IInitializable>())
+                foreach (var initializable in componentModel.GetExtensions<IMainThreadInitializable>())
                 {
-                    initializable.Initialize(this);
+                    initializable.InitializeOnMainThread(this);
                 }
             }
         }
