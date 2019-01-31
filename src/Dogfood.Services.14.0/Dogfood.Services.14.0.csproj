@@ -7,7 +7,7 @@
     <ProjectGuid>{136EB190-87C5-454D-A866-C65FD6C5F8BB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Dogfood.Services._14._0</RootNamespace>
+    <RootNamespace>Dogfood.Services</RootNamespace>
     <AssemblyName>Dogfood.Services.14.0</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
