@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Dogfood.Exports;
 using Microsoft.VisualStudio.ExtensionManager;
-using Microsoft.VisualStudio.Shell;
 using DTE = EnvDTE.DTE;
 using Task = System.Threading.Tasks.Task;
 
@@ -12,18 +11,18 @@ namespace Dogfood.Services
 {
     public class DogfoodService : IDogfoodService
     {
-        IAsyncServiceProvider asyncServiceProvider;
+        IServiceProvider serviceProvider;
         IProjectUtilities projectUtilities;
 
-        public DogfoodService(IAsyncServiceProvider asyncServiceProvider, IProjectUtilities projectUtilities)
+        public DogfoodService(IServiceProvider serviceProvider, IProjectUtilities projectUtilities)
         {
-            this.asyncServiceProvider = asyncServiceProvider;
+            this.serviceProvider = serviceProvider;
             this.projectUtilities = projectUtilities;
         }
 
         public async Task<bool> Reinstall(string vsixFile, IProgress<string> progress)
         {
-            var em = await ExtensionManager();
+            var em = ExtensionManager();
             var installableExtension = em.CreateInstallableExtension(vsixFile);
             var identifier = installableExtension.Header.Identifier;
 
@@ -56,7 +55,7 @@ namespace Dogfood.Services
 
         async Task<bool> Uninstall(string identifier, IProgress<string> progress)
         {
-            var em = await ExtensionManager();
+            var em = ExtensionManager();
 
             if (!em.TryGetInstalledExtension(identifier, out IInstalledExtension previousExt))
             {
@@ -68,7 +67,7 @@ namespace Dogfood.Services
             {
                 progress.Report("Admin rights are requred to uninstall AllUsers=true extension.");
 
-                var dte = await Dte();
+                var dte = Dte();
                 if (StartUninstall(dte, identifier, progress))
                 {
                     progress.Report("Please close Visual Studio, uninstall using VSIXInstaller and try again.");
@@ -111,9 +110,8 @@ namespace Dogfood.Services
             target.GetType().GetProperty(name).SetValue(target, value);
         }
 
-        async Task<IVsExtensionManager> ExtensionManager() => (IVsExtensionManager)await asyncServiceProvider.GetServiceAsync(typeof(SVsExtensionManager));
+        IVsExtensionManager ExtensionManager() => (IVsExtensionManager)serviceProvider.GetService(typeof(SVsExtensionManager));
 
-        async Task<DTE> Dte() => (DTE)await asyncServiceProvider.GetServiceAsync(typeof(DTE));
-
+        DTE Dte() => (DTE)serviceProvider.GetService(typeof(DTE));
     }
 }

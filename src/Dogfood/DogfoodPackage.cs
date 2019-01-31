@@ -22,9 +22,10 @@ namespace InstallExperiment
         {
             if (await GetServiceAsync(typeof(SComponentModel)) is IComponentModel componentModel)
             {
-                foreach (var initializable in componentModel.GetExtensions<IAsyncInitializable>())
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                foreach (var initializable in componentModel.GetExtensions<IInitializable>())
                 {
-                    await initializable.InitializeAsync(this);
+                    initializable.Initialize(this);
                 }
             }
         }

@@ -54,7 +54,7 @@
     <Compile Include="DogfoodCommand.cs" />
     <Compile Include="DogfoodOutputPane.cs" />
     <Compile Include="DogfoodService.cs" />
-    <Compile Include="IAsyncInitializable.cs" />
+    <Compile Include="IInitializable.cs" />
     <Compile Include="ProjectUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -72,6 +72,11 @@
       <Project>{efc62dca-be25-4699-ba7a-445e0b34d3fa}</Project>
       <Name>Dogfood.Services.15.0</Name>
       <Aliases>DS15</Aliases>
+    </ProjectReference>
+    <ProjectReference Include="..\Dogfood.Services.16.0\Dogfood.Services.16.0.csproj">
+      <Project>{70337588-3b2b-49f6-a0df-e1c27cd608b3}</Project>
+      <Name>Dogfood.Services.16.0</Name>
+      <Aliases>DS16</Aliases>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
