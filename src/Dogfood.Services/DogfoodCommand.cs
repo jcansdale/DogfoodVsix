@@ -8,12 +8,11 @@ using Microsoft.Win32;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
-using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.IAsyncServiceProvider;
 
 namespace Dogfood.Services
 {
-    [Export(typeof(IAsyncInitializable))]
-    public class DogfoodCommand : IAsyncInitializable
+    [Export(typeof(IMainThreadInitializable))]
+    public class DogfoodCommand : IMainThreadInitializable
     {
         public const int CommandId = 0x0100;
         public static readonly Guid CommandSet = new Guid("998fbf43-97c5-4598-b758-29c5db102cda");
@@ -22,8 +21,6 @@ namespace Dogfood.Services
         readonly IProjectUtilities projectUtilities;
         readonly IDogfoodOutputPane dogfoodOutputPane;
         readonly IServiceProvider serviceProvider;
-
-        IAsyncServiceProvider asyncServiceProvider;
 
         [ImportingConstructor]
         public DogfoodCommand(
@@ -38,11 +35,9 @@ namespace Dogfood.Services
             this.serviceProvider = serviceProvider;
         }
 
-        public async Task InitializeAsync(IAsyncServiceProvider asp)
+        public void InitializeOnMainThread(IServiceProvider serviceProvider)
         {
-            asyncServiceProvider = asp;
-
-            var commandService = (OleMenuCommandService)await asp.GetServiceAsync(typeof(IMenuCommandService));
+            var commandService = (OleMenuCommandService)serviceProvider.GetService(typeof(IMenuCommandService));
             if (commandService != null)
             {
                 var menuCommandID = new CommandID(CommandSet, CommandId);
@@ -70,7 +65,7 @@ namespace Dogfood.Services
                 Filter = "Visual Studio Extension (*.vsix)|*.vsix"
             };
 
-            var dte = (DTE)await asyncServiceProvider.GetServiceAsync(typeof(DTE));
+            var dte = (DTE)serviceProvider.GetService(typeof(DTE));
             var vsixFile = projectUtilities.FindVsixFile(dte.Solution);
             if (vsixFile != null)
             {
@@ -92,7 +87,7 @@ namespace Dogfood.Services
 
             if (ShouldRestart(serviceProvider))
             {
-                var shell = (IVsShell4)await asyncServiceProvider.GetServiceAsync(typeof(SVsShell));
+                var shell = (IVsShell4)serviceProvider.GetService(typeof(SVsShell));
                 shell.Restart((uint)__VSRESTARTTYPE.RESTART_Normal);
             }
         }
