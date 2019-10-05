@@ -91,7 +91,7 @@ namespace Dogfood.Services
                 return false;
             }
 
-            var startInfo = new ProcessStartInfo(application, $"/uninstall:{identifier}");
+            var startInfo = new ProcessStartInfo(application, $"/uninstall:{identifier} /appIdInstallPath:\"{dte.FileName}\" /appIdName:VS /skuName:{dte.Edition} /skuVersion:{dte.Version}");
             Process.Start(startInfo);
             return true;
         }
