@@ -39,6 +39,12 @@ namespace Dogfood.Services
                 progress.Report($"Changed extension to AllUsers={header.AllUsers}");
             }
 
+            if (header.SystemComponent)
+            {
+                SetValue(header, nameof(header.SystemComponent), false);
+                progress.Report($"Changed extension to SystemComponent={header.SystemComponent}");
+            }
+
             SetValue(header, nameof(header.LocalizedName), header.LocalizedName + " [Dogfood]");
 
             progress.Report("Installing " + header.Name + " from " + vsixFile);
@@ -63,21 +69,37 @@ namespace Dogfood.Services
                 return true;
             }
 
-            if (previousExt.Header.AllUsers)
-            {
-                progress.Report("Admin rights are requred to uninstall AllUsers=true extension.");
+            progress.Report("Uninstalling " + previousExt.Header.Name);
 
-                var dte = Dte();
-                if (StartUninstall(dte, identifier, progress))
+            try
+            {
+                await Task.Run(() => em.Uninstall(previousExt));
+            }
+            catch (RequiresAdminRightsException e)
+            {
+                progress.Report(e.Message);
+
+                if (previousExt.Header.SystemComponent)
                 {
-                    progress.Report("Please close Visual Studio, uninstall using VSIXInstaller and try again.");
+                    progress.Report("This extension is a SystemComponent and will need be be manually disabled.");
+                    progress.Report("Delete/rename .pkgdef, .vsixmanifest and .imagemanifest files in the following folder:");
+                    progress.Report(previousExt.InstallPath);
+                    progress.Report("Then restart Visual Studio and try installing again!");
+                    return false;
                 }
 
-                return false;
+                if (previousExt.Header.AllUsers)
+                {
+                    var dte = Dte();
+                    if (StartUninstall(dte, identifier, progress))
+                    {
+                        progress.Report("Please close Visual Studio, uninstall using VSIXInstaller and try again.");
+                    }
+
+                    return false;
+                }
             }
 
-            progress.Report("Uninstalling " + previousExt.Header.Name);
-            await Task.Run(() => em.Uninstall(previousExt));
             return true;
         }
 
