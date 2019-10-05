@@ -66,17 +66,17 @@
     <ProjectReference Include="..\Dogfood.Services.14.0\Dogfood.Services.14.0.csproj">
       <Project>{136eb190-87c5-454d-a866-c65fd6c5f8bb}</Project>
       <Name>Dogfood.Services.14.0</Name>
-      <Aliases>DS14</Aliases>
+      <Aliases>global</Aliases>
     </ProjectReference>
     <ProjectReference Include="..\Dogfood.Services.15.0\Dogfood.Services.15.0.csproj">
       <Project>{efc62dca-be25-4699-ba7a-445e0b34d3fa}</Project>
       <Name>Dogfood.Services.15.0</Name>
-      <Aliases>DS15</Aliases>
+      <Aliases>global</Aliases>
     </ProjectReference>
     <ProjectReference Include="..\Dogfood.Services.16.0\Dogfood.Services.16.0.csproj">
       <Project>{70337588-3b2b-49f6-a0df-e1c27cd608b3}</Project>
       <Name>Dogfood.Services.16.0</Name>
-      <Aliases>DS16</Aliases>
+      <Aliases>global</Aliases>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
