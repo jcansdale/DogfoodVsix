@@ -10,8 +10,6 @@ If you just want to quickly try out some Visual Studio extension, `Dogfood.vsix`
 
 The easiest way to get `Dogfood.vsix` is to install it directly from Visual Studio by using "Tools -> Extensions and Updates". You can also [download it](https://marketplace.visualstudio.com/items?itemName=JamieCansdale.DogfoodVsix) from the Visual Studio Marketplace.
 
-The latest version can be found at the [Open VSIX Gallery](http://vsixgallery.com/author/jamie%20cansdale).
-
 Once installed, it adds "Dogfood" menu item to the Visual Studio "Tools" menu.
 
 ![image](https://user-images.githubusercontent.com/11719160/41686244-441010b6-74db-11e8-809c-a8e4b1c2acdb.png)
